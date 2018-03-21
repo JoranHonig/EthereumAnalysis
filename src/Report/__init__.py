@@ -1,0 +1,2 @@
+class Finding:
+    pass
