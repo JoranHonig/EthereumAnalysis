@@ -1,5 +1,6 @@
-from .Reporter import *
+from src.Reporter.Reporter import Reporter
 from src.Report import Finding
+
 
 class LocalReporter(Reporter):
 
