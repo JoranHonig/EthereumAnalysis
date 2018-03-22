@@ -34,6 +34,8 @@ class LocalNotifier(Notifier):
         for i in range(self.current_block + 1, new_block + 1):
             self._examine_block(i)
 
+        self.current_block = new_block
+
     def _new_blocks(self):
         """
         :return: Amount of new blocks available
