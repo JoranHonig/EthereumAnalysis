@@ -1,6 +1,11 @@
 import time
 import logging
+from src.ContractNotifier.LocalNotifier import LocalNotifier
+from src.Reporter.LocalReporter import LocalReporter
+from src.AnalysisRunner.AnalysisRunner import AnalysisRunner
+from src.AnalysisRunner.MythrilRunner import analyse_mythril
 
+from src.Report.Finding import Finding
 
 class AnalysisManager:
 
@@ -31,3 +36,11 @@ class AnalysisManager:
         # Report findings
         for finding in findings:
             self.reporter.add_finding(finding)
+
+
+if __name__ == "__main__":
+
+    # Initialize components
+    notifier = LocalNotifier('mainnet.infura.io', 443)
+    reporter = LocalReporter()
+    runner = AnalysisRunner(analysis_functions=[analyse_mythril])
