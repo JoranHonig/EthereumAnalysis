@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import logging
 
-from src.Report.Finding import Finding
+from EthereumAnalysis.Report.Finding import Finding
 from mythril.ether.ethcontract import ETHContract
 from mythril.rpc.client import EthJsonRpc
 from mythril.analysis.symbolic import SymExecWrapper

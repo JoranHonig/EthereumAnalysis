@@ -1,5 +1,5 @@
-from src.Reporter.Reporter import Reporter
-from src.Report.Finding import Finding
+from EthereumAnalysis.Reporter.Reporter import Reporter
+from EthereumAnalysis.Report.Finding import Finding
 import sys
 from termcolor import colored, cprint
 

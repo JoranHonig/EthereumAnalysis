@@ -1,9 +1,9 @@
 import time
 import logging
-from src.ContractNotifier.LocalNotifier import LocalNotifier
-from src.Reporter.LocalReporter import LocalReporter
-from src.AnalysisRunner.AnalysisRunner import AnalysisRunner
-from src.AnalysisRunner.MythrilRunner import analyse_mythril
+from EthereumAnalysis.ContractNotifier.LocalNotifier import LocalNotifier
+from EthereumAnalysis.Reporter.LocalReporter import LocalReporter
+from EthereumAnalysis.AnalysisRunner.AnalysisRunner import AnalysisRunner
+from EthereumAnalysis.AnalysisRunner.MythrilRunner import analyse_mythril
 
 class AnalysisManager:
 
