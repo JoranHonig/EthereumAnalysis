@@ -29,7 +29,7 @@ class AnalysisManager:
         :param contract_address: Address of contract to analyse
         :param source: source name of notifier
         """
-        logging.info("Analysis manager got contract with address {} from {}", contract_address, source)
+        logging.info("Analysis manager got contract with address {} from {}".format(contract_address, source))
         findings = self.runner.analyse(contract_address)
         # Report findings
         for finding in findings:
@@ -37,6 +37,7 @@ class AnalysisManager:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
 
     # Initialize components
     notifier = LocalNotifier('mainnet.infura.io', 443)

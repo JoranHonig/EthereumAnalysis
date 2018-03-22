@@ -52,7 +52,7 @@ class LocalNotifier(Notifier):
         # Gets the block by number, true indicates that we want the entire transactions instead of only hashes
         block = self.rpc_client.eth_getBlockByNumber(number, True)
 
-        logging.info("Examining block with number {}", number)
+        logging.info("Examining block with number {}".format(number))
 
         try:
             transactions = block['transactions']
