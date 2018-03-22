@@ -69,10 +69,10 @@ class LocalNotifier(Notifier):
         :param transaction_object: object from ethjsonrpc describing the transaction
         """
         if transaction_object['to'] is not None:
-            logging.debug("Transaction with hash {} is not a contract creating transaction", transaction_object['hash'])
+            logging.debug("Transaction with hash {} is not a contract creating transaction".format(transaction_object['hash']))
             return
 
-        logging.info("Found contract creating transaction with hash {}", transaction_object['hash'])
+        logging.info("Found contract creating transaction with hash {}".format(transaction_object['hash']))
 
         transaction_receipt = self.rpc_client.eth_getTransactionReceipt(transaction_object['hash'])
 
