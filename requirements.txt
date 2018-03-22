@@ -1,1 +1,2 @@
 ethjsonrpc=0.3.0
+mythril=1.0.8
