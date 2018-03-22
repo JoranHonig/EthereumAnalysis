@@ -15,20 +15,23 @@ def analyse_mythril(address):
     :return: Findings
     """
     # The followin code is kinda straight from mythril
-    logging.debug("Connecting with ethereum rpc to ")
+    # Setup
+    logging.debug("Connecting with ethereum rpc to infura")
+    # TODO: dont initialize this every time
     eth = EthJsonRpc('mainnet.infura.io', 443, True)
     code = eth.eth_getCode(address)
     contract = ETHContract(code, name=address)
     sym = SymExecWrapper(contract, address)
+
+    # Analysis
+    logging.debug("Firing lasers on contract with address: {}".format(address))
     issues = fire_lasers(sym)
 
-    # Here we go again
+    logging.debug("Found {} issues using mythril".format(len(issues)))
+
+    # Build findings
     findings = []
     for issue in issues:
         findings += [Finding("Mythril analysis", issue.title, issue.description)]
 
     return findings
-
-# TODO: remove this main func
-if __name__ == "__main__":
-    analyse_mythril("0x20e836AF82460707652d28D8523E234dfC5048f5")
