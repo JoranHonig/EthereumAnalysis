@@ -8,15 +8,19 @@ class LocalReporter(Reporter):
         self.findings = []
 
     def add_finding(self, finding):
-        self.findings.append(finding)
+        print(" Source: {} Name: {}".format(finding.source, finding.name))
+
+        print(" Description: \n {}".format(finding.description))
+
+        # self.findings.append(finding)
 
     def report(self):
         print("Reporting on {} findings")
         counter = 0
         for finding in self.findings:
             counter += 1
-            print("Finding: {}", counter)
+            print("Finding: {}".format(counter))
 
-            print(" Source: {} Name: {}", finding.source, finding.name)
+            print(" Source: {} Name: {}".format(finding.source, finding.name))
 
-            print(" Description: \n {}", finding.description)
+            print(" Description: \n {}".format(finding.description))
