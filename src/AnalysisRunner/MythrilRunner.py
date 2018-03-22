@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import logging
+
 from src.Report.Finding import Finding
 from mythril.ether.ethcontract import ETHContract
 from mythril.rpc.client import EthJsonRpc
@@ -13,6 +15,7 @@ def analyse_mythril(address):
     :return: Findings
     """
     # The followin code is kinda straight from mythril
+    logging.debug("Connecting with ethereum rpc to ")
     eth = EthJsonRpc('mainnet.infura.io', 443, True)
     code = eth.eth_getCode(address)
     contract = ETHContract(code, name=address)
@@ -22,7 +25,7 @@ def analyse_mythril(address):
     # Here we go again
     findings = []
     for issue in issues:
-        findings += Finding("Mythril analysis", issue.title, issue.description)
+        findings += [Finding("Mythril analysis", issue.title, issue.description)]
 
     return findings
 
