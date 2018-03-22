@@ -20,11 +20,11 @@ class LocalNotifier(Notifier):
         self.rpc_client = EthJsonRpc(rpc_address, rpc_port, True)
 
         logging.info("Initialized rpc client")
-        logging.info("Geth version: {}", self.rpc_client.web3_clientVersion())
+        logging.info("Geth version: {}".format(self.rpc_client.web3_clientVersion()))
 
         self.current_block = self.rpc_client.eth_blockNumber()
 
-        logging.info("The ethereum client is currently at block {}", self.current_block)
+        logging.info("The ethereum client is currently at block {}".format(self.current_block))
 
     def scan(self):
         """
