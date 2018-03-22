@@ -73,7 +73,12 @@ class LocalNotifier(Notifier):
 
         transaction_receipt = self.rpc_client.eth_getTransactionReceipt(transaction_object['hash'])
 
-        contract_address = transaction_receipt['contractAddress']
+        try:
+            contract_address = transaction_receipt['contractAddress']
+        except TypeError:
+            logging.debug(
+                f"Found transaction with no to value and the receipt contained no contract address. Transaction hash: {transaction_object['hash']}")
+            return
 
         logging.info("Found new contract with address {}")
 
