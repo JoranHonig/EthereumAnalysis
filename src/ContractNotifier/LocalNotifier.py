@@ -5,7 +5,7 @@ from .Notifier import *
 
 class LocalNotifier(Notifier):
 
-    def __init__(self, rpc_address, rpc_port, callback):
+    def __init__(self, rpc_address, rpc_port):
         """
         Constructor for LocalNotifier class
         :param rpc_address: Address of ethereum rpc interface
@@ -14,7 +14,7 @@ class LocalNotifier(Notifier):
         """
         logging.info("Initializing local notifier")
 
-        super().__init__(callback)
+        super().__init__()
         self.rpc_client = EthJsonRpc(rpc_address, rpc_port)
 
         logging.info("Initialized rpc client")
