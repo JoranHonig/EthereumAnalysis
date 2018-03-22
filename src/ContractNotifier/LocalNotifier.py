@@ -32,11 +32,11 @@ class LocalNotifier(Notifier):
         """
         new_block = self.rpc_client.eth_blockNumber()
 
-        logging.info("Starting analysis of blocks {} to {}".format(self.current_block + 1, new_block + 1))
-        for i in range(self.current_block + 1, new_block + 1):
+        logging.info("Starting analysis of blocks {} to {}".format(self.current_block + 1, new_block))
+        for i in range(self.current_block + 1, new_block):
             self._examine_block(i)
 
-        self.current_block = new_block
+        self.current_block = new_block - 1
 
     def _new_blocks(self):
         """
@@ -54,7 +54,10 @@ class LocalNotifier(Notifier):
 
         logging.info("Examining block with number {}", number)
 
-        transactions = block['transactions']
+        try:
+            transactions = block['transactions']
+        except TypeError:
+            logging.debug("No transactions element found in block {}".format(number))
 
         # Examine all transactions
         for transaction in transactions:
