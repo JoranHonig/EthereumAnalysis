@@ -1,4 +1,6 @@
-from ethjsonrpc import EthJsonRpc
+# from ethjsonrpc import EthJsonRpc
+from mythril.rpc.client import EthJsonRpc
+
 import logging
 from .Notifier import *
 
@@ -15,7 +17,7 @@ class LocalNotifier(Notifier):
         logging.info("Initializing local notifier")
 
         super().__init__()
-        self.rpc_client = EthJsonRpc(rpc_address, rpc_port)
+        self.rpc_client = EthJsonRpc(rpc_address, rpc_port, True)
 
         logging.info("Initialized rpc client")
         logging.info("Geth version: {}", self.rpc_client.web3_clientVersion())
@@ -48,7 +50,7 @@ class LocalNotifier(Notifier):
 
         logging.info("Examining block with number {}", number)
 
-        transactions = block.transactions
+        transactions = block['transactions']
 
         # Examine all transactions
         for transaction in transactions:
@@ -59,15 +61,15 @@ class LocalNotifier(Notifier):
         Examine a transaction and report any found contracts
         :param transaction_object: object from ethjsonrpc describing the transaction
         """
-        if transaction_object.to is not None:
-            logging.debug("Transaction with hash {} is not a contract creating transaction", transaction_object.hash)
+        if transaction_object['to'] is not None:
+            logging.debug("Transaction with hash {} is not a contract creating transaction", transaction_object['hash'])
             return
 
-        logging.info("Found contract creating transaction with hash {}", transaction_object.hash)
+        logging.info("Found contract creating transaction with hash {}", transaction_object['hash'])
 
-        transaction_receipt = self.rpc_client.eth_getTransactionReceipt(transaction_object.hash)
+        transaction_receipt = self.rpc_client.eth_getTransactionReceipt(transaction_object['hash'])
 
-        contract_address = transaction_receipt.contractAddress
+        contract_address = transaction_receipt['contractAddress']
 
         logging.info("Found new contract with address {}")
 
