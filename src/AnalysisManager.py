@@ -5,8 +5,6 @@ from src.Reporter.LocalReporter import LocalReporter
 from src.AnalysisRunner.AnalysisRunner import AnalysisRunner
 from src.AnalysisRunner.MythrilRunner import analyse_mythril
 
-from src.Report.Finding import Finding
-
 class AnalysisManager:
 
     def __init__(self, notifier, reporter, runner):
@@ -25,7 +23,7 @@ class AnalysisManager:
         # Start scanning
         self.notifier.scan()
 
-    def _contract_found(self, contract_address, source):
+    def _contract_found(self, contract_address, object, source):
         """
         Analyse contract and report findings
         :param contract_address: Address of contract to analyse
@@ -44,3 +42,9 @@ if __name__ == "__main__":
     notifier = LocalNotifier('mainnet.infura.io', 443)
     reporter = LocalReporter()
     runner = AnalysisRunner(analysis_functions=[analyse_mythril])
+
+    AnalysisManager(notifier, reporter, runner)
+
+    while True:
+        time.sleep(10)
+        notifier.scan()
