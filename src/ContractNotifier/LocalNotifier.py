@@ -6,6 +6,11 @@ from .Notifier import *
 class LocalNotifier(Notifier):
 
     def __init__(self, rpc_address, rpc_port):
+        """
+        Constructor for LocalNotifier class
+        :param rpc_address: Address of ethereum rpc interface
+        :param rpc_port: Port of ethereum rpc interface
+        """
         logging.info("Initializing local notifier")
 
         self.rpc_client = EthJsonRpc(rpc_address, rpc_port)
@@ -17,10 +22,25 @@ class LocalNotifier(Notifier):
 
         logging.info("The ethereum client is currently at block {}", self.current_block)
 
+    def scan(self):
+        """
+        Scan for new blocks and examine them for new contracts
+        """
+        new_block = self.rpc_client.eth_blockNumber()
+        for i in range(self.current_block + 1, new_block + 1):
+            self._examine_block(i)
+
     def _new_blocks(self):
+        """
+        :return: Amount of new blocks available
+        """
         return self.rpc_client.eth_blockNumber() - self.current_block
 
     def _examine_block(self, number):
+        """
+        Examine all transactions in a block and report found contracts
+        :param number: blocknumber of block to examine
+        """
         # Gets the block by number, true indicates that we want the entire transactions instead of only hashes
         block = self.rpc_client.eth_getBlockByNumber(number, True)
 
@@ -28,10 +48,16 @@ class LocalNotifier(Notifier):
 
         transactions = block.transactions
 
-    def _examine_transaction(self, transaction_object):
-        to = transaction_object.to
+        # Examine all transactions
+        for transaction in transactions:
+            self._examine_transaction(transaction)
 
-        if to is not None:
+    def _examine_transaction(self, transaction_object):
+        """
+        Examine a transaction and report any found contracts
+        :param transaction_object: object from ethjsonrpc describing the transaction
+        """
+        if transaction_object.to is not None:
             logging.debug("Transaction with hash {} is not a contract creating transaction", transaction_object.hash)
             return
 
