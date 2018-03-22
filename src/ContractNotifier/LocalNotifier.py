@@ -31,6 +31,8 @@ class LocalNotifier(Notifier):
         Scan for new blocks and examine them for new contracts
         """
         new_block = self.rpc_client.eth_blockNumber()
+
+        logging.info("Starting analysis of blocks {} to {}".format(self.current_block + 1, new_block + 1))
         for i in range(self.current_block + 1, new_block + 1):
             self._examine_block(i)
 
