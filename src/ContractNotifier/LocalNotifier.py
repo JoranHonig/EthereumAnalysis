@@ -5,14 +5,16 @@ from .Notifier import *
 
 class LocalNotifier(Notifier):
 
-    def __init__(self, rpc_address, rpc_port):
+    def __init__(self, rpc_address, rpc_port, callback):
         """
         Constructor for LocalNotifier class
         :param rpc_address: Address of ethereum rpc interface
         :param rpc_port: Port of ethereum rpc interface
+        :param callback: Callback function to call when a contract is found
         """
         logging.info("Initializing local notifier")
 
+        super().__init__(callback)
         self.rpc_client = EthJsonRpc(rpc_address, rpc_port)
 
         logging.info("Initialized rpc client")
