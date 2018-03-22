@@ -1,5 +1,7 @@
 from src.Reporter.Reporter import Reporter
-from src.Report import Finding
+from src.Report.Finding import Finding
+import sys
+from termcolor import colored, cprint
 
 
 class LocalReporter(Reporter):
@@ -8,9 +10,23 @@ class LocalReporter(Reporter):
         self.findings = []
 
     def add_finding(self, finding):
-        print(" Source: {} Name: {}".format(finding.source, finding.name))
+        print("{} Finding source: {}".format(
+            colored('[*]', 'green'),
+            finding.source
+        ))
+        print("{} Finding name: {}".format(
+            colored('[*]', 'green'),
+            finding.name
+        ))
+        print("{} Contract address: {}".format(
+              colored('[*]', 'green'),
+              finding.address
+        ))
+        print("{} Description: \n {}".format(
+            colored('[*]', 'green'),
+            finding.description
+        ))
 
-        print(" Description: \n {}".format(finding.description))
 
         # self.findings.append(finding)
 
@@ -24,3 +40,8 @@ class LocalReporter(Reporter):
             print(" Source: {} Name: {}".format(finding.source, finding.name))
 
             print(" Description: \n {}".format(finding.description))
+
+# if __name__=="__main__":
+#     rep = LocalReporter()
+#     f = Finding("Me", "super hack", "description", "0x199")
+#     rep.add_finding(f)
