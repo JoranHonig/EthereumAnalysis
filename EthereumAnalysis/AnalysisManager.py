@@ -37,7 +37,7 @@ class AnalysisManager:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 
     # Initialize components
     notifier = LocalNotifier('mainnet.infura.io', 443)
