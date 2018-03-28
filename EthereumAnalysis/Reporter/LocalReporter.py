@@ -14,13 +14,15 @@ class LocalReporter(Reporter):
             colored('[*]', 'green'),
             finding.source
         ))
-        print("{} Finding name: {}".format(
+        print("{} Finding name: {}. Severity: {}".format(
             colored('[*]', 'green'),
-            finding.name
+            finding.name,
+            finding.severity
         ))
-        print("{} Contract address: {}".format(
+        print("{} Contract address: {}, and pc: {}".format(
               colored('[*]', 'green'),
-              finding.address
+              finding.address,
+              finding.pc
         ))
         print("{} Description: \n {}".format(
             colored('[*]', 'green'),
