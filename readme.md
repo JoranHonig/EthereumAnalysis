@@ -14,6 +14,7 @@ analyzer -l -i
 - [x] Commandline tool
 - [x] Extend Finding to include information like the pc where an error occured, or severity
 - [ ] Add [oyente](https://github.com/melonproject/oyente) as an analysis tool
+- [ ] Implement concurrent analysis of contracts
 - [ ] Implement a notifier which gets notified by a message broker
 - [ ] Report findings to a message broker
 - [ ] Implement application which looks for new blocks and notifies a messagebroker
