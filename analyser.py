@@ -19,6 +19,7 @@ local_settings.add_argument('-i', action='store_true', help="Use infura network"
 
 parser.add_argument('-f', action='store_true', help='Start analysis from genesis block')
 parser.add_argument('-d', action='store_true', help='Enable logging')
+parser.add_argument('--interval', type=int, help='Ethereum polling interval', default=60)
 args = parser.parse_args()
 # Enable logging
 if args.d:
@@ -32,23 +33,34 @@ if args.l:
     # Initialize notifier
     notifier = None
     if args.i:
+        logging.info("Initializing connection with infura network")
         notifier = LocalNotifier('mainnet.infura.io', 443)
     elif args.rpc_settings:
-        raise Exception("Not implemented")
+        logging.info("Initializing connection with ethereum rpc interface at {}".format(args.rpc_settings))
+        host = args.rpc_settings.split(':')[0]
+        port = args.rpc_settings.split(':')[1]
+        notifier = LocalNotifier(host, port)
     else:
-        raise Exception("Not supported supply at least rpc settings or use infura")
+        print("Use the infura network or use a custom rpc interface")
+        exit(0)
 
+    logging.info("Initializing local reporter")
     reporter = LocalReporter()
 else:
-    raise Exception('Not implemented')
+    print("Non local analysis is not implemented")
+    exit(0)
 
+logging.info("Initializing analysis module")
 runner = AnalysisRunner(analysis_functions=[analyse_mythril])
 
 if notifier is None or reporter is None or runner is None:
-    raise Exception("Invalid setup occurred")
+    print("The required components are not correctly initialized")
+    exit(0)
 
+logging.info("Setting up Analysis manager")
 AnalysisManager(notifier, reporter, runner)
 
+logging.info("Starting scanning loop with interval {} sec".format(args.interval))
 while True:
-    time.sleep(60)
+    time.sleep(args.interval)
     notifier.scan()
