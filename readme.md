@@ -13,8 +13,11 @@ analyzer -l -i
 ## Roadmap
 - [x] Commandline tool
 - [x] Extend Finding to include information like the pc where an error occured, or severity
-- [ ] Add [oyente](https://github.com/melonproject/oyente) as an analysis tool
+- [ ] Implement concurrent analysis of contracts
 - [ ] Implement a notifier which gets notified by a message broker
 - [ ] Report findings to a message broker
 - [ ] Implement application which looks for new blocks and notifies a messagebroker
 - [ ] Implement application which consumes findings from a message broker and displays/stores the results
+
+### The following item is delayed because of unstable dependencies
+- [ ] ~~Add [oyente](https://github.com/melonproject/oyente) as an analysis tool~~
