@@ -1,5 +1,5 @@
 from EthereumAnalysis.AnalysisRunner import runners
-from multiprocessing import Pool
+import asyncio
 import logging
 import pkgutil
 
@@ -30,7 +30,7 @@ class AnalysisRunner:
             except Exception as e:
                 logging.error("Encountered an exception while initializing runner with name: {} \n Exception: {}".format(name, str(e)))
 
-    def analyse(self, address):
+    async def analyse(self, address):
         """
         Analyse contract
         :param address: address of contract to analyse
@@ -38,16 +38,27 @@ class AnalysisRunner:
         """
         logging.info("Starting analysis of contract at address: {}".format(address))
 
-        findings = []
         # run analysis
-        for name, method in self.runners:
-            findings += self._run_analysis_function(name, method, address)
+        # for name, method in self.runners:
+        #     findings += self._run_analysis_function(name, method, address)
+        # Construct a list of tuples ( name, method, address)
+        loop = asyncio.get_event_loop()
+        [
+            loop. (
+                self._run_analysis_function(name, method, address)
+            ) for name, method in self.runners
+        ]
+
+        findings = []
+        for a_result in async_results:
+            findings += a_result.get()
 
         logging.info("During analysis we found {} issues".format(len(findings)))
 
         return findings
 
-    def _run_analysis_function(self, name, method, address):
+    @staticmethod
+    def _run_analysis_function(name, method, address):
         findings = []
         try:
             findings += method(address)
@@ -55,3 +66,10 @@ class AnalysisRunner:
             logging.error("Encountered an exception while analyzing contract with address: {} using runner with "
                           "name: {} \n Exception: {}".format(address, name, str(e)))
         return findings
+
+if __name__=="__main__":
+    logging.basicConfig(level=logging.INFO)
+    a = AnalysisRunner(('mainnet.infura.io', 443))
+    a.analyse('0x5312804f1b3f872e2fc3a43c7c9e472017e5e351')
+    exit(0)
+
