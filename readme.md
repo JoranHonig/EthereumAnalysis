@@ -11,7 +11,7 @@ analyzer -l -i
 ```
 
 ## Roadmap
-- [ ] Commandline tool
+- [*] Commandline tool
 - [ ] Extend Finding to include information like the pc where an error occured, or severity
 - [ ] Add [oyente](https://github.com/melonproject/oyente) as an analysis tool
 - [ ] Implement a notifier which gets notified by a message broker
