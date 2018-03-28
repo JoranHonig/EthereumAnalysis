@@ -4,6 +4,7 @@ from EthereumAnalysis.ContractNotifier.LocalNotifier import LocalNotifier
 from EthereumAnalysis.Reporter.LocalReporter import LocalReporter
 from EthereumAnalysis.AnalysisRunner.AnalysisRunner import AnalysisRunner
 from EthereumAnalysis.AnalysisRunner.MythrilRunner import analyse_mythril
+from termcolor import colored, cprint
 
 import time
 import logging
@@ -61,6 +62,12 @@ logging.info("Setting up Analysis manager")
 AnalysisManager(notifier, reporter, runner)
 
 logging.info("Starting scanning loop with interval {} sec".format(args.interval))
-while True:
-    time.sleep(args.interval)
-    notifier.scan()
+
+try:
+    while True:
+        time.sleep(args.interval)
+        notifier.scan()
+except KeyboardInterrupt:
+    print("\n{} Received exit signal, exiting...".format(
+        colored('[*]', 'red')
+    ))
