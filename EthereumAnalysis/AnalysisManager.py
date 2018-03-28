@@ -1,9 +1,5 @@
-import time
 import logging
-from EthereumAnalysis.ContractNotifier.LocalNotifier import LocalNotifier
-from EthereumAnalysis.Reporter.LocalReporter import LocalReporter
-from EthereumAnalysis.AnalysisRunner.AnalysisRunner import AnalysisRunner
-from EthereumAnalysis.AnalysisRunner.MythrilRunner import analyse_mythril
+
 
 class AnalysisManager:
 
@@ -34,18 +30,3 @@ class AnalysisManager:
         # Report findings
         for finding in findings:
             self.reporter.add_finding(finding)
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-
-    # Initialize components
-    notifier = LocalNotifier('mainnet.infura.io', 443)
-    reporter = LocalReporter()
-    runner = AnalysisRunner(analysis_functions=[analyse_mythril])
-
-    AnalysisManager(notifier, reporter, runner)
-
-    while True:
-        time.sleep(60)
-        notifier.scan()
