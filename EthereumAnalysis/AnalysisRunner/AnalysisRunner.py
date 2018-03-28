@@ -17,19 +17,16 @@ class AnalysisRunner:
 
         for loader, name, pkg in pkgutil.walk_packages(runners.__path__):
             logging.info('Adding analysis module with name: {}'.format(name))
-            self.runners.append(
-                loader.find_module(name)
-                    .load_module(name)
-                    .get_runner(rpc_settings)
-            )
-
-    def add_analysis_function(self, f):
-        """
-        Add a function to analyse contracts
-        :param f: function to add
-        """
-        logging.debug("Added analysis function")
-        self.functions += f
+            try:
+                self.runners.append((
+                     name,
+                     loader.find_module(name)
+                         .load_module(name)
+                         .get_runner(rpc_settings)
+                     )
+                )
+            except Exception as e:
+                logging.error("Encountered an exception while initializing runner with name: {} \n Exception: {}".format(name, str(e)))
 
     def analyse(self, address):
         """
@@ -41,8 +38,12 @@ class AnalysisRunner:
 
         findings = []
         # run analysis
-        for f in self.runners:
-            findings += f(address)
+        for name, method in self.runners:
+            try:
+                findings += method(address)
+            except Exception as e:
+                logging.error("Encountered an exception while analyzing contract with address: {} using runner with "
+                              "name: {} \n Exception: {}".format(address, name, str(e)))
 
         logging.info("During analysis we found {} issues".format(len(findings)))
 
