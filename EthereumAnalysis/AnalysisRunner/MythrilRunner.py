@@ -32,6 +32,6 @@ def analyse_mythril(address):
     # Build findings
     findings = []
     for issue in issues:
-        findings += [Finding("Mythril analysis", issue.title, issue.description, issue.contract)]
+        findings += [Finding("Mythril analysis", issue.title, issue.description, issue.contract, issue.pc, issue.type)]
 
     return findings
