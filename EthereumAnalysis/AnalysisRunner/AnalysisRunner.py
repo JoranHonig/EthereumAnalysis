@@ -3,7 +3,6 @@ import asyncio
 import logging
 import pkgutil
 
-
 class AnalysisRunner:
     """
     AnalysisRunner class is used to manage all separate analysis runners and report their findings
@@ -15,7 +14,6 @@ class AnalysisRunner:
         """
         logging.debug("Initializing analysis runner")
         self.runners = []
-        self.pool = Pool(4)
 
         for loader, name, pkg in pkgutil.walk_packages(runners.__path__):
             logging.debug('Adding analysis module with name: {}'.format(name))
@@ -38,30 +36,21 @@ class AnalysisRunner:
         """
         logging.info("Starting analysis of contract at address: {}".format(address))
 
-        # run analysis
-        # for name, method in self.runners:
-        #     findings += self._run_analysis_function(name, method, address)
-        # Construct a list of tuples ( name, method, address)
-        loop = asyncio.get_event_loop()
-        [
-            loop. (
-                self._run_analysis_function(name, method, address)
-            ) for name, method in self.runners
-        ]
+        tasks = [self._run_analysis_function(name, method, address) for name, method in self.runners]
+        result = []
 
-        findings = []
-        for a_result in async_results:
-            findings += a_result.get()
+        for findings in await asyncio.gather(*tasks):
+            result += findings
 
-        logging.info("During analysis we found {} issues".format(len(findings)))
+        logging.info("During analysis we found {} issues".format(len(result)))
 
-        return findings
+        return result
 
     @staticmethod
-    def _run_analysis_function(name, method, address):
+    async def _run_analysis_function(name, method, address):
         findings = []
         try:
-            findings += method(address)
+            findings += await method(address)
         except Exception as e:
             logging.error("Encountered an exception while analyzing contract with address: {} using runner with "
                           "name: {} \n Exception: {}".format(address, name, str(e)))
@@ -70,6 +59,8 @@ class AnalysisRunner:
 if __name__=="__main__":
     logging.basicConfig(level=logging.INFO)
     a = AnalysisRunner(('mainnet.infura.io', 443))
-    a.analyse('0x5312804f1b3f872e2fc3a43c7c9e472017e5e351')
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(a.analyse('0x5312804f1b3f872e2fc3a43c7c9e472017e5e351'))
+
     exit(0)
 

@@ -2,6 +2,8 @@
 from mythril.rpc.client import EthJsonRpc
 
 import logging
+import asyncio
+
 from .Notifier import *
 
 
@@ -33,10 +35,13 @@ class LocalNotifier(Notifier):
         new_block = self.rpc_client.eth_blockNumber()
 
         logging.info("Starting analysis of blocks {} to {}".format(self.current_block + 1, new_block))
+        tasks = []
         for i in range(self.current_block + 1, new_block):
-            self._examine_block(i)
+            tasks += list(self._examine_block(i))
 
         self.current_block = new_block - 1
+
+        return tasks
 
     def _new_blocks(self):
         """
@@ -61,7 +66,9 @@ class LocalNotifier(Notifier):
 
         # Examine all transactions
         for transaction in transactions:
-            self._examine_transaction(transaction)
+            task = self._examine_transaction(transaction)
+            if task is not None:
+                yield task
 
     def _examine_transaction(self, transaction_object):
         """
@@ -83,6 +90,6 @@ class LocalNotifier(Notifier):
                 f"Found transaction with no to value and the receipt contained no contract address. Transaction hash: {transaction_object['hash']}")
             return
 
-        logging.info("Found new contract with address {}")
+        logging.info("Found new contract with address {}".format(contract_address))
 
-        self.encounter(contract_address, "LocalNotifier")
+        return self.encounter(contract_address, "LocalNotifier")

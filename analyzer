@@ -4,7 +4,7 @@ from EthereumAnalysis.ContractNotifier.LocalNotifier import LocalNotifier
 from EthereumAnalysis.Reporter.LocalReporter import LocalReporter
 from EthereumAnalysis.AnalysisRunner.AnalysisRunner import AnalysisRunner
 from termcolor import colored
-
+import asyncio
 import time
 import logging
 import argparse
@@ -23,7 +23,7 @@ parser.add_argument('--interval', type=int, help='Ethereum polling interval', de
 args = parser.parse_args()
 # Enable logging
 if args.d:
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
 notifier = None
 reporter = None
@@ -67,13 +67,25 @@ AnalysisManager(notifier, reporter, runner)
 
 logging.debug("Starting scanning loop with interval {} sec".format(args.interval))
 
-logging.debug("Initializing pool")
+async def main(args):
+    tasks = []
+    try:
+        while True:
+            await asyncio.sleep(args.interval)
+            tasks += notifier.scan()
+            await asyncio.gather(*tasks)
+            if tasks != []:
+                pass
+    except KeyboardInterrupt:
+        print("\n{} Received exit signal, exiting...".format(
+            colored('[*]', 'red')
+        ))
+        loop.stop()
+        exit(0)
 
-try:
-    while True:
-        time.sleep(args.interval)
-        notifier.scan()
-except KeyboardInterrupt:
-    print("\n{} Received exit signal, exiting...".format(
-        colored('[*]', 'red')
-    ))
+asyncio.ensure_future(main(args))
+
+loop = asyncio.get_event_loop()
+loop.run_forever()
+
+
