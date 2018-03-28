@@ -34,12 +34,12 @@ if args.l:
     # Initialize notifier
     host, port = None, None
     if args.i:
-        logging.info("Initializing connection with infura network")
+        logging.debug("Initializing connection with infura network")
         # notifier = LocalNotifier('mainnet.infura.io', 443)
         host = 'mainnet.infura.io'
         port = '443'
     elif args.rpc_settings:
-        logging.info("Initializing connection with ethereum rpc interface at {}".format(args.rpc_settings))
+        logging.debug("Initializing connection with ethereum rpc interface at {}".format(args.rpc_settings))
         host = args.rpc_settings.split(':')[0]
         port = args.rpc_settings.split(':')[1]
     else:
@@ -48,10 +48,10 @@ if args.l:
 
     notifier = LocalNotifier(host, port)
 
-    logging.info("Initializing local reporter")
+    logging.debug("Initializing local reporter")
     reporter = LocalReporter()
 
-    logging.info("Initializing analysis module")
+    logging.debug("Initializing analysis module")
     runner = AnalysisRunner((host, port))
 else:
     print("Not implemented")
@@ -62,10 +62,12 @@ if notifier is None or reporter is None or runner is None:
     print("The required components are not correctly initialized")
     exit(0)
 
-logging.info("Setting up Analysis manager")
+logging.debug("Setting up Analysis manager")
 AnalysisManager(notifier, reporter, runner)
 
-logging.info("Starting scanning loop with interval {} sec".format(args.interval))
+logging.debug("Starting scanning loop with interval {} sec".format(args.interval))
+
+logging.debug("Initializing pool")
 
 try:
     while True:

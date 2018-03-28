@@ -1,4 +1,5 @@
 from EthereumAnalysis.AnalysisRunner import runners
+from multiprocessing import Pool
 import logging
 import pkgutil
 
@@ -10,13 +11,14 @@ class AnalysisRunner:
     def __init__(self, rpc_settings):
         """
         Constructor for AnalysisRunner
-        :param analysis_functions: analysis functions that should be ran
+        :param rpc_settings: rpc settings to use
         """
         logging.debug("Initializing analysis runner")
         self.runners = []
+        self.pool = Pool(4)
 
         for loader, name, pkg in pkgutil.walk_packages(runners.__path__):
-            logging.info('Adding analysis module with name: {}'.format(name))
+            logging.debug('Adding analysis module with name: {}'.format(name))
             try:
                 self.runners.append((
                      name,
@@ -39,12 +41,17 @@ class AnalysisRunner:
         findings = []
         # run analysis
         for name, method in self.runners:
-            try:
-                findings += method(address)
-            except Exception as e:
-                logging.error("Encountered an exception while analyzing contract with address: {} using runner with "
-                              "name: {} \n Exception: {}".format(address, name, str(e)))
+            findings += self._run_analysis_function(name, method, address)
 
         logging.info("During analysis we found {} issues".format(len(findings)))
 
+        return findings
+
+    def _run_analysis_function(self, name, method, address):
+        findings = []
+        try:
+            findings += method(address)
+        except Exception as e:
+            logging.error("Encountered an exception while analyzing contract with address: {} using runner with "
+                          "name: {} \n Exception: {}".format(address, name, str(e)))
         return findings
