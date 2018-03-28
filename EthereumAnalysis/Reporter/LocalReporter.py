@@ -42,8 +42,3 @@ class LocalReporter(Reporter):
             print(" Source: {} Name: {}".format(finding.source, finding.name))
 
             print(" Description: \n {}".format(finding.description))
-
-# if __name__=="__main__":
-#     rep = LocalReporter()
-#     f = Finding("Me", "super hack", "description", "0x199")
-#     rep.add_finding(f)
