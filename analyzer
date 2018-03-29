@@ -4,8 +4,10 @@ from EthereumAnalysis.ContractNotifier.LocalNotifier import LocalNotifier
 from EthereumAnalysis.Reporter.LocalReporter import LocalReporter
 from EthereumAnalysis.AnalysisRunner.AnalysisRunner import AnalysisRunner
 from termcolor import colored
+from EthereumAnalysis.AnalysisManager import pool
 import asyncio
 import time
+import concurrent
 import logging
 import argparse
 
@@ -23,7 +25,7 @@ parser.add_argument('--interval', type=int, help='Ethereum polling interval', de
 args = parser.parse_args()
 # Enable logging
 if args.d:
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 
 notifier = None
 reporter = None
@@ -34,24 +36,24 @@ if args.l:
     # Initialize notifier
     host, port = None, None
     if args.i:
-        logging.debug("Initializing connection with infura network")
+        logging.info("Initializing connection with infura network")
         # notifier = LocalNotifier('mainnet.infura.io', 443)
         host = 'mainnet.infura.io'
         port = '443'
     elif args.rpc_settings:
-        logging.debug("Initializing connection with ethereum rpc interface at {}".format(args.rpc_settings))
+        logging.info("Initializing connection with ethereum rpc interface at {}".format(args.rpc_settings))
         host = args.rpc_settings.split(':')[0]
         port = args.rpc_settings.split(':')[1]
     else:
         print("Use the infura network or use a custom rpc interface")
         exit(0)
 
-    notifier = LocalNotifier(host, port)
+    notifier = LocalNotifier(host, port, args.f)
 
-    logging.debug("Initializing local reporter")
+    logging.info("Initializing local reporter")
     reporter = LocalReporter()
 
-    logging.debug("Initializing analysis module")
+    logging.info("Initializing analysis module")
     runner = AnalysisRunner((host, port))
 else:
     print("Not implemented")
@@ -62,30 +64,22 @@ if notifier is None or reporter is None or runner is None:
     print("The required components are not correctly initialized")
     exit(0)
 
-logging.debug("Setting up Analysis manager")
+logging.info("Setting up Analysis manager")
 AnalysisManager(notifier, reporter, runner)
 
-logging.debug("Starting scanning loop with interval {} sec".format(args.interval))
+logging.info("Starting scanning loop with interval {} sec".format(args.interval))
 
-async def main(args):
-    tasks = []
+def main(args):
     try:
         while True:
-            await asyncio.sleep(args.interval)
-            tasks += notifier.scan()
-            await asyncio.gather(*tasks)
-            if tasks != []:
-                pass
+            time.sleep(args.interval)
+            tasks = notifier.scan()
+            # pool.join()
     except KeyboardInterrupt:
         print("\n{} Received exit signal, exiting...".format(
             colored('[*]', 'red')
         ))
-        loop.stop()
         exit(0)
 
-asyncio.ensure_future(main(args))
-
-loop = asyncio.get_event_loop()
-loop.run_forever()
-
+main(args)
 

@@ -1,9 +1,14 @@
 import asyncio
+import concurrent
+from multiprocessing import Pool
 
 class Notifier:
 
     def __initialize__(self):
         self.callback = lambda x, y, z : x
 
+
     def encounter(self, address, source=None):
-        return asyncio.ensure_future(self.callback(address, self, source))
+        return self.callback(address, self, source)
+
+

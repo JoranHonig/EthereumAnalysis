@@ -28,7 +28,7 @@ class AnalysisRunner:
             except Exception as e:
                 logging.error("Encountered an exception while initializing runner with name: {} \n Exception: {}".format(name, str(e)))
 
-    async def analyse(self, address):
+    def analyse(self, address):
         """
         Analyse contract
         :param address: address of contract to analyse
@@ -39,7 +39,7 @@ class AnalysisRunner:
         tasks = [self._run_analysis_function(name, method, address) for name, method in self.runners]
         result = []
 
-        for findings in await asyncio.gather(*tasks):
+        for findings in tasks:
             result += findings
 
         logging.info("During analysis we found {} issues".format(len(result)))
@@ -47,10 +47,10 @@ class AnalysisRunner:
         return result
 
     @staticmethod
-    async def _run_analysis_function(name, method, address):
+    def _run_analysis_function(name, method, address):
         findings = []
         try:
-            findings += await method(address)
+            findings += method.analyze(address)
         except Exception as e:
             logging.error("Encountered an exception while analyzing contract with address: {} using runner with "
                           "name: {} \n Exception: {}".format(address, name, str(e)))

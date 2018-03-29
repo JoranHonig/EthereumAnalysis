@@ -21,7 +21,7 @@ class MythrilRunner:
         # Lets just agree to use ssl
         self.eth = EthJsonRpc(rpc_settings[0], rpc_settings[1], True)
 
-    async def analyze(self, address):
+    def analyze(self, address):
         """
         Analyse a contract using mythril
         :param address: Address of contract to analyse
@@ -59,4 +59,4 @@ class MythrilRunner:
 
 def get_runner(rpc_settings):
     """ Creates a mythril runner instance and returns the analyze method"""
-    return MythrilRunner(rpc_settings).analyze
+    return MythrilRunner(rpc_settings)

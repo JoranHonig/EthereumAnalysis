@@ -9,7 +9,7 @@ from .Notifier import *
 
 class LocalNotifier(Notifier):
 
-    def __init__(self, rpc_address, rpc_port):
+    def __init__(self, rpc_address, rpc_port, full=False):
         """
         Constructor for LocalNotifier class
         :param rpc_address: Address of ethereum rpc interface
@@ -25,6 +25,9 @@ class LocalNotifier(Notifier):
         logging.info("Geth version: {}".format(self.rpc_client.web3_clientVersion()))
 
         self.current_block = self.rpc_client.eth_blockNumber()
+        if full:
+            logging.info("Starting analysis of full blockchain")
+            self.current_block = 5330030
 
         logging.info("The ethereum client is currently at block {}".format(self.current_block))
 
@@ -36,7 +39,8 @@ class LocalNotifier(Notifier):
 
         logging.info("Starting analysis of blocks {} to {}".format(self.current_block + 1, new_block))
         tasks = []
-        for i in range(self.current_block + 1, new_block):
+        new_block = min(new_block, self.current_block + 20)
+        for i in range(self.current_block, new_block):
             tasks += list(self._examine_block(i))
 
         self.current_block = new_block - 1
