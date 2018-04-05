@@ -6,7 +6,8 @@ from mythril.ether.ethcontract import ETHContract
 from mythril.rpc.client import EthJsonRpc
 from mythril.analysis.symbolic import SymExecWrapper
 from mythril.analysis.security import fire_lasers
-
+from mythril.support.loader import DynLoader
+import threading
 
 class MythrilRunner:
     """
@@ -17,6 +18,7 @@ class MythrilRunner:
         Constructor for MythrilRunner
         :param rpc_settings: Settings used to connect to rpc interface
         """
+        self.lock = threading.RLock()
         logging.debug("Initializing MythrilRunner")
         # Lets just agree to use ssl
         self.eth = EthJsonRpc(rpc_settings[0], rpc_settings[1], True)
@@ -29,33 +31,38 @@ class MythrilRunner:
         """
         # The followin code is kinda straight from mythril, thanks ;)
         # Setup
-        code = self.eth.eth_getCode(address)
+        self.lock.acquire()
+        try:
+            code = self.eth.eth_getCode(address)
 
-        contract = ETHContract(code, name=address)
-        sym = SymExecWrapper(contract, address)
 
-        # Starting analysis
-        logging.debug("Firing lasers on contract with address: {}".format(address))
-        issues = fire_lasers(sym)
+            contract = ETHContract(code, name=address)
+            sym = SymExecWrapper(contract, address, dynloader=DynLoader(self.eth))
 
-        logging.debug("Found {} issues using mythril".format(len(issues)))
+            # Starting analysis
+            logging.debug("Firing lasers on contract with address: {}".format(address))
+            issues = fire_lasers(sym)
 
-        # Build findings
-        findings = []
-        for issue in issues:
-            findings += [
-                Finding(
-                    "Mythril analysis",
-                    issue.title,
-                    issue.description,
-                    issue.contract,
-                    issue.pc,
-                    issue.type
-                )
-            ]
+            logging.debug("Found {} issues using mythril".format(len(issues)))
 
-        return findings
-
+            # Build findings
+            findings = []
+            for issue in issues:
+                findings += [
+                    Finding(
+                        "Mythril analysis",
+                        issue.title,
+                        issue.description,
+                        issue.contract,
+                        issue.pc,
+                        issue.type
+                    )
+                ]
+            self.lock.release()
+            return findings
+        except:
+            self.lock.release()
+            raise
 
 def get_runner(rpc_settings):
     """ Creates a mythril runner instance and returns the analyze method"""
