@@ -6,7 +6,7 @@ from mythril.ether.ethcontract import ETHContract
 from mythril.rpc.client import EthJsonRpc
 from mythril.analysis.symbolic import SymExecWrapper
 from mythril.analysis.security import fire_lasers
-
+from mythril.support.loader import DynLoader
 
 class MythrilRunner:
     """
@@ -32,8 +32,7 @@ class MythrilRunner:
         code = self.eth.eth_getCode(address)
 
         contract = ETHContract(code, name=address)
-        sym = SymExecWrapper(contract, address)
-
+        sym = SymExecWrapper(contract, address, dynloader=DynLoader(self.eth))
         # Starting analysis
         logging.debug("Firing lasers on contract with address: {}".format(address))
         issues = fire_lasers(sym)
