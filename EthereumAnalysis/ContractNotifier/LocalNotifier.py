@@ -83,6 +83,6 @@ class LocalNotifier(Notifier):
                 f"Found transaction with no to value and the receipt contained no contract address. Transaction hash: {transaction_object['hash']}")
             return
 
-        logging.info("Found new contract with address {}")
+        logging.info("Found new contract with address {}".format(contract_address))
 
         self.encounter(contract_address, "LocalNotifier")
